@@ -1,7 +1,4 @@
-services:
-  - type: cron
-    name: tcg-restock-check
-    schedule: "*/3 * * * *"
-    env: python
-    startCommand: "python3 main.py"
+git add render.yaml
+git commit -m "Run every hour 6am-11am PST"
+git push
 
