@@ -1,0 +1,7 @@
+services:
+  - type: cron
+    name: tcg-restock-check
+    schedule: "*/3 * * * *"
+    env: python
+    startCommand: "python main.py"
+
