@@ -22,7 +22,12 @@ POKEMON_URLS = [
 BESTBUY_KEYWORDS = ["pokemon elite trainer box", "pokemon booster box"]
 
 sent_items = set()
-logging.basicConfig(level=logging.INFO)
+
+# ✅ Enable timestamped logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 def send_line_message(message):
     headers = {
@@ -34,7 +39,7 @@ def send_line_message(message):
         "messages": [{"type": "text", "text": message}]
     }
     response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=payload)
-    logging.info(f"LINE Status: {response.status_code}, Response: {response.text}")
+    logging.info(f"📤 LINE Status: {response.status_code}, Response: {response.text}")
 
 def get_pokemon_center_items():
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -60,7 +65,7 @@ def get_pokemon_center_items():
                         found.append(f"{title}\n{link}")
                         sent_items.add(title)
         except Exception as e:
-            logging.warning(f"Error checking Pokémon Center URL {url}: {e}")
+            logging.warning(f"⚠️ Error checking Pokémon Center URL {url}: {e}")
 
     return found
 
@@ -86,13 +91,14 @@ def get_bestbuy_items():
                             found.append(f"{title}\nhttps://www.bestbuy.com{link}")
                             sent_items.add(title)
     except Exception as e:
-        logging.warning(f"Error checking Best Buy: {e}")
+        logging.warning(f"⚠️ Error checking Best Buy: {e}")
 
     return found
 
 def check_and_alert():
     pst = pytz.timezone("US/Pacific")
     now = datetime.now(pst)
+    logging.info(f"🕒 Current PST time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
     start_time = now.replace(hour=5, minute=55, second=0, microsecond=0)
     end_time = now.replace(hour=11, minute=0, second=0, microsecond=0)
 
@@ -106,10 +112,13 @@ def check_and_alert():
     else:
         logging.info("⏳ Outside scan window. Sleeping...")
 
+# ✅ Add logging to scheduler
 def scheduler():
+    logging.info("🔁 Scheduler thread started.")
     while True:
+        logging.info("🔄 Running scheduled check...")
         check_and_alert()
-        time.sleep(60)  # Every 60 seconds
+        time.sleep(60)
 
 @app.route("/")
 def index():
@@ -118,4 +127,3 @@ def index():
 if __name__ == "__main__":
     threading.Thread(target=scheduler, daemon=True).start()
     app.run(host="0.0.0.0", port=10000)
-
