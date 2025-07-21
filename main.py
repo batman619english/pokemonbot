@@ -125,5 +125,8 @@ def index():
     return "Pokémon Restock Bot is running."
 
 if __name__ == "__main__":
-    threading.Thread(target=scheduler, daemon=True).start()
+    logging.info("🚀 Starting Flask app...")
+    scheduler_thread = threading.Thread(target=scheduler, daemon=True)
+    scheduler_thread.start()
+    logging.info("✅ Scheduler started.")
     app.run(host="0.0.0.0", port=10000)
