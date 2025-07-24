@@ -22,7 +22,7 @@ POKEMON_URLS = [
 BESTBUY_KEYWORDS = ["pokemon elite trainer box", "pokemon booster box"]
 
 sent_items = set()
-
+logging.basicConfig(level=logging.INFO)
 # ✅ Enable timestamped logging
 logging.basicConfig(
     level=logging.INFO,
@@ -34,6 +34,7 @@ def send_line_message(message):
         "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
+    logging.info(f"LINE Status: {response.status_code}, Response: {response.text}")
     payload = {
         "to": LINE_USER_ID,
         "messages": [{"type": "text", "text": message}]
@@ -59,7 +60,7 @@ def get_pokemon_center_items():
 
                 title = title_tag["data-productname"].strip()
                 link = "https://www.pokemoncenter.com" + title_tag["href"]
-
+            logging.warning(f"Error checking Pokémon Center URL {url}: {e}")
                 if not stock_tag or "out of stock" not in stock_tag.text.lower():
                     if title not in sent_items:
                         found.append(f"{title}\n{link}")
